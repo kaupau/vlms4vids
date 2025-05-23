@@ -1,0 +1,1 @@
+DEFAULT_SYSTEM_PROMPT = "Given frames from a video, understand thoroughly what is happening in the video."

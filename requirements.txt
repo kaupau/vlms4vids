@@ -1,0 +1,5 @@
+python-dotenv
+dspy
+numpy
+pillow
+pydantic
