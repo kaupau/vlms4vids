@@ -65,7 +65,9 @@ response = analyzer.ask(frames, prompt="What is the main subject of the video?")
 print(response)
 ```
 
-### Custom Analysis Module
+### Use your own DSPy modules
+
+You can use your own DSPy modules (and signatures) by passing them to the analyzer. Signature expects `frames` (and `chat_history` for `chat` method) to be present. If not present, it will be auto-added to the signature.
 
 ```python
 from vlms4vids.analyzers.analyzer_complex import VideoModule
@@ -114,6 +116,8 @@ vids4vlms/
 ```
 
 ## Future Improvements
+
+- Publish to PyPI
 
 ### Live Streaming Support
 - Real-time video stream processing capabilities
