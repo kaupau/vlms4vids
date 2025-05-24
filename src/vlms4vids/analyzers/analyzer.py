@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Iterable, Protocol
 import dspy
-from vids4vlms.prompts import DEFAULT_SYSTEM_PROMPT
+from vlms4vids.prompts import DEFAULT_SYSTEM_PROMPT
 
 @dataclass
 class AnalyzerConfig:
@@ -41,14 +41,35 @@ class DSPyAnalyzer(Analyzer):
         # above link is a bug in dspy - check if it's fixed
     
 class SimpleVideoAnalyzer(DSPyAnalyzer):
-    def __init__(self, cfg: AnalyzerConfig):
+    def __init__(self, cfg: AnalyzerConfig, dspy_module: dspy.Module = dspy.ChainOfThought, signature: dspy.Signature = VideoSignature):
         super().__init__(cfg)
+        self.dspy_module = dspy_module
 
-    def ask(self, frames: Iterable[dspy.Image], prompt: str, dspy_module: dspy.Module = dspy.ChainOfThought) -> Any:
-        return dspy_module(VideoSignature)(frames=frames, system_prompt=prompt)
+        # add frames to signature if not present
+        if "frames" not in signature.input_fields:
+            signature = signature.prepend(
+                name="frames",
+                field=dspy.InputField(desc="A list of sequential frames from a video"),
+                type_=list[dspy.Image]
+            )
+        self.signature = signature
+
+        # add chat_history to signature if not present
+        if "chat_history" or "messages" not in signature.input_fields:
+            signature = signature.prepend(
+                name="chat_history",
+                field=dspy.InputField(desc="A list of previous messages between the user and the assistant"),
+                type_=list[dict[str, str]]
+            )
+        self.chat_signature = signature
+
+    def ask(self, frames: Iterable[dspy.Image], prompt: str) -> Any:
+        return self.dspy_module(self.signature)(frames=frames, system_prompt=prompt)
     
-    def chat(self, frames: Iterable[dspy.Image], messages: list[dict[str, str]], dspy_module: dspy.Module = dspy.ChainOfThought) -> Any:
-        return dspy_module(VideoChatSignature)(frames=frames, chat_history=messages)
+    def chat(self, frames: Iterable[dspy.Image], messages: list[dict[str, str]]) -> Any:
+        return self.dspy_module(self.chat_signature)(frames=frames, chat_history=messages)
+    
+
 
 
 # Cases:

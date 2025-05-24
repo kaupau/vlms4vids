@@ -6,7 +6,7 @@ import dspy
 from PIL import Image
 
 @dataclass
-class ExtractorConfig:
+class VideoExtractorConfig:
     """Configuration for frame extraction"""
     resize_dims: Optional[Tuple[int, int]] = None  # (width, height)
     resize_scale: Optional[float] = None  # Scale factor between 0-1
@@ -16,13 +16,13 @@ class ExtractorConfig:
     max_frames: Optional[int] = None  # Maximum number of frames
     output_path: Optional[str] = None  # Path to save frames if needed
 
-class Extractor(Protocol):
-    def __call__(self, video_path: str, cfg: ExtractorConfig) -> Iterable[np.ndarray]:
+class VideoExtractor(Protocol):
+    def __call__(self, video_path: str, cfg: VideoExtractorConfig) -> Iterable[np.ndarray]:
         ...
 
-class DefaultExtractor:
+class DefaultVideoExtractor:
     """Default implementation of frame extraction using utils.py"""
-    def __call__(self, video_path: str, cfg: ExtractorConfig) -> Iterable[np.ndarray]:
+    def __call__(self, video_path: str, cfg: VideoExtractorConfig) -> Iterable[np.ndarray]:
         # Convert ExtractorConfig to VideoProcessingConfig
         video_cfg = VideoProcessingConfig(
             resize_dims=cfg.resize_dims,
@@ -40,9 +40,9 @@ class DefaultExtractor:
             config=video_cfg
         )
     
-class DSPyExtractor(DefaultExtractor):
+class VideoExtractor4Dspy(DefaultVideoExtractor):
     """DSPy implementation of frame extraction"""
-    def __call__(self, video_path: str, cfg: ExtractorConfig) -> Iterable[dspy.Image]:
+    def __call__(self, video_path: str, cfg: VideoExtractorConfig) -> Iterable[dspy.Image]:
         frames = super().__call__(video_path, cfg)
         video_frames = [Image.fromarray(np.uint8(frame)) for frame in frames]
         return [dspy.Image.from_PIL(frame) for frame in video_frames]

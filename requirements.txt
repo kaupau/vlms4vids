@@ -3,3 +3,4 @@ dspy
 numpy
 pillow
 pydantic
+ffmpeg
