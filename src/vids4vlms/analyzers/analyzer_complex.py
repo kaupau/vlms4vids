@@ -2,7 +2,7 @@ import dspy
 from typing import Any, Iterable, Type, Optional, Union
 import pydantic
 from src.analyzers.analyzer import DSPyAnalyzer, VideoSignature, AnalyzerConfig
-from src.prompts import DEFAULT_SYSTEM_PROMPT
+from vids4vlms.prompts import DEFAULT_SYSTEM_PROMPT
 
 class VideoModule(dspy.Module):
     def __init__(

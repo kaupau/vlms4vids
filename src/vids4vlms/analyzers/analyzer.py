@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Iterable, Protocol
 import dspy
-from src.prompts import DEFAULT_SYSTEM_PROMPT
+from vids4vlms.prompts import DEFAULT_SYSTEM_PROMPT
+
 @dataclass
 class AnalyzerConfig:
     """Configuration for DSPy analysis"""
